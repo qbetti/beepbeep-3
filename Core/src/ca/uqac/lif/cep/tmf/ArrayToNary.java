@@ -1,51 +1,49 @@
 package ca.uqac.lif.cep.tmf;
 
-import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.ProcessorException;
 import ca.uqac.lif.cep.UniformProcessor;
 
 import java.lang.reflect.Array;
 
+/**
+ * Takes an array of size n as 0th input and produces an n-sized output front
+ * with its elements.I.e., it sends the elements of the array to n different
+ * outputs, in the order of the array indexes (element at position i in the
+ * input array will be send to the i-th output).
+ *
+ * @author Quentin Betti
+ */
 public class ArrayToNary extends UniformProcessor {
 
-
-    public ArrayToNary(int out_arity) {
-        super(1, out_arity);
+    /**
+     * Constructs an {@link ArrayToNary} processor that takes arrays of
+     * the given size as input.
+     * @param arraySize the size of the input arrays
+     */
+    public ArrayToNary(int arraySize) {
+        super(1, arraySize);
     }
 
     @Override
     protected boolean compute(Object[] inputs, Object[] outputs) throws ProcessorException {
         Object o = inputs[0];
         if(!o.getClass().isArray())
-            return false;
+            throw new ProcessorException("Index 0 of input front must be an array");
 
-        Class classOfArray = o.getClass().getComponentType();
-
-        if(classOfArray.isPrimitive()) {
-            int length = Array.getLength(o);
-            if(length != outputs.length)
-                return false;
-
-            for(int i = 0; i < length; i++) {
-                Object obj = Array.get(o, i);
-                outputs[i] = obj;
-            }
+        int length = Array.getLength(o);
+        if(length != outputs.length)
+        {
+            throw new ProcessorException("Length of input array must equal the output arity");
         }
-        else {
-            Object[] arrayInputs = (Object[]) inputs[0];
-            if(arrayInputs.length != outputs.length)
-                return false;
-
-            for(int i = 0; i < arrayInputs.length; i++)
-                outputs[i] = arrayInputs[i];
+        for(int i = 0; i < length; i++)
+        {
+            outputs[i] = Array.get(o, i);
         }
-
         return true;
     }
 
-
     @Override
-    public Processor duplicate() {
+    public ArrayToNary duplicate() {
         return new ArrayToNary(getOutputArity());
     }
 }
