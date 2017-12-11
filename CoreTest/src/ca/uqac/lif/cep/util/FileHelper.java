@@ -264,6 +264,11 @@ public class FileHelper
 		return filename.substring(0, position);
 	}
 
+	public static File internalFile(Class<?> c, String path)
+	{
+		return new File(c.getResource(path).getFile());
+	}
+
 	public static String internalFileToString(Class<?> c, String path)
 	{
 		InputStream in = c.getResourceAsStream(path);

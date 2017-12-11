@@ -429,7 +429,7 @@ public class UtilTest
 		assertEquals(Number.class, f2.getOutputTypeFor(0));
 		assertEquals(String.class, f2.getOutputTypeFor(1));
 	}
-	
+
 	@Test
 	public void testSize()
 	{

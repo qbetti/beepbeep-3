@@ -19,12 +19,7 @@ package ca.uqac.lif.cep.io;
 
 import static org.junit.Assert.*;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.*;
 
 import org.junit.Assume;
 import org.junit.Test;
@@ -215,7 +210,26 @@ public class IoTest
 		assertEquals("baz" + ReadLines.CRLF, (String) p.pull());
 		assertFalse(p.hasNext());
 	}
-	
+
+	@Test
+	public void testExtendedReadFile () throws IOException
+	{
+		File file = FileHelper.internalFile(IoTest.class, "resource/test2.txt");
+		ExtendedReadFile rf = new ExtendedReadFile(file);
+		Pullable p0 = rf.getPullableOutput(0);
+		Pullable p1 = rf.getPullableOutput(1);
+		Pullable p2 = rf.getPullableOutput(2);
+		assertEquals("foo", (String) p0.pull());
+		assertEquals(1, ((Number) p1.pull()).intValue());
+		assertEquals(file, (File) p2.pull());
+		assertEquals("bar", (String) p0.pull());
+		assertEquals(2, ((Number) p1.pull()).intValue());
+		assertEquals(file, (File) p2.pull());
+		assertEquals("baz", (String) p0.pull());
+		assertEquals(3, ((Number) p1.pull()).intValue());
+		assertEquals(file, (File) p2.pull());
+	}
+
 	@Test
 	public void testOutputStreamProcessor1() throws IOException
 	{
