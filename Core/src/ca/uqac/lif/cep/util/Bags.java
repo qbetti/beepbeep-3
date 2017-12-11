@@ -473,7 +473,8 @@ public class Bags
 		}
 
 		@Override
-		public void getInputTypesFor(Set<Class<?>> classes, int index) {
+		public void getInputTypesFor(Set<Class<?>> classes, int index)
+		{
 			if(index == 0)
 			{
 				classes.add(Collection.class);
@@ -481,17 +482,20 @@ public class Bags
 		}
 
 		@Override
-		public Class<?> getOutputTypeFor(int index) {
+		public Class<?> getOutputTypeFor(int index)
+		{
 			return m_types[index];
 		}
 
 		@Override
-		public FromCollection duplicate() {
+		public FromCollection duplicate()
+		{
 			return new FromCollection(m_types);
 		}
 
 		@Override
-		public void evaluate(Object[] inputs, Object[] outputs) {
+		public void evaluate(Object[] inputs, Object[] outputs)
+		{
 			if(! (inputs[0] instanceof Collection))
 			{
 				throw new FunctionException("Index 0 of input front must be a collection");
@@ -522,13 +526,18 @@ public class Bags
 	 */
 	public static class FromArray extends FromCollection
 	{
+		/**
+		 * Creates a new FromArray function
+		 * @param types The types of each output stream
+		 */
 		public FromArray(Class<?> ... types)
 		{
 			super(types);
 		}
 
 		@Override
-		public void getInputTypesFor(Set<Class<?>> classes, int index) {
+		public void getInputTypesFor(Set<Class<?>> classes, int index)
+		{
 			if(index == 0)
 			{
 				classes.add((new Object[]{}).getClass());
