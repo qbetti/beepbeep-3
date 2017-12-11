@@ -45,6 +45,8 @@ import ca.uqac.lif.cep.util.Bags.ApplyToAll;
 import ca.uqac.lif.cep.util.Bags.ToArray;
 import ca.uqac.lif.cep.util.Bags.ToList;
 import ca.uqac.lif.cep.util.Bags.ToSet;
+import ca.uqac.lif.cep.util.Bags.FromCollection;
+import ca.uqac.lif.cep.util.Bags.FromArray;
 
 /**
  * Unit tests for functions and processors of the <tt>util</tt> package.
@@ -303,6 +305,131 @@ public class UtilTest
 		assertEquals(1, in_types.size());
 		assertTrue(in_types.contains(String.class));
 	}
+
+	@Test
+	public void testFromCollection1()
+	{
+		FromCollection f = new Bags.FromCollection(Number.class, String.class);
+		List<Object> list = new ArrayList<Object>();
+		list.add(0);
+		list.add("foo");
+		assertEquals(2, f.getOutputArity());
+		Object[] out = new Object[2];
+		f.evaluate(new Object[]{list}, out);
+		assertEquals(0, ((Number) out[0]).intValue());
+		assertEquals("foo", (String) out[1]);
+		assertEquals(Number.class, f.getOutputTypeFor(0));
+		assertEquals(String.class, f.getOutputTypeFor(1));
+		Set<Class<?>> in_types = new HashSet<Class<?>>();
+		f.getInputTypesFor(in_types, 0);
+		assertEquals(1, in_types.size());
+		assertTrue(in_types.contains(Collection.class));
+		in_types.clear();
+		f.getInputTypesFor(in_types, 1);
+		assertEquals(0, in_types.size());
+		in_types.clear();
+		assertEquals(Number.class, f.getOutputTypeFor(0));
+		assertEquals(String.class, f.getOutputTypeFor(1));
+		FromCollection f2 = f.duplicate();
+		assertEquals(2, f2.getOutputArity());
+		f2.evaluate(new Object[]{list}, out);
+		assertEquals(0, ((Number) out[0]).intValue());
+		assertEquals("foo", (String) out[1]);
+		assertEquals(Number.class, f2.getOutputTypeFor(0));
+		assertEquals(String.class, f2.getOutputTypeFor(1));
+		f2.getInputTypesFor(in_types, 0);
+		assertEquals(1, in_types.size());
+		assertTrue(in_types.contains(Collection.class));
+		in_types.clear();
+		f2.getInputTypesFor(in_types, 1);
+		assertEquals(0, in_types.size());
+		in_types.clear();
+		assertEquals(Number.class, f2.getOutputTypeFor(0));
+		assertEquals(String.class, f2.getOutputTypeFor(1));
+	}
+
+	@Test
+	public void testFromCollection2()
+	{
+		FromCollection f = new Bags.FromCollection(Number.class, String.class);
+		Set<Object> set = new HashSet<Object>();
+		set.add(0);
+		set.add("foo");
+		assertEquals(2, f.getOutputArity());
+		Object[] out = new Object[2];
+		f.evaluate(new Object[]{set}, out);
+		assertEquals(0, ((Number) out[0]).intValue());
+		assertEquals("foo", (String) out[1]);
+		assertEquals(Number.class, f.getOutputTypeFor(0));
+		assertEquals(String.class, f.getOutputTypeFor(1));
+		Set<Class<?>> in_types = new HashSet<Class<?>>();
+		f.getInputTypesFor(in_types, 0);
+		assertEquals(1, in_types.size());
+		assertTrue(in_types.contains(Collection.class));
+		in_types.clear();
+		f.getInputTypesFor(in_types, 1);
+		assertEquals(0, in_types.size());
+		in_types.clear();
+		assertEquals(Number.class, f.getOutputTypeFor(0));
+		assertEquals(String.class, f.getOutputTypeFor(1));
+		FromCollection f2 = f.duplicate();
+		assertEquals(2, f2.getOutputArity());
+		f2.evaluate(new Object[]{set}, out);
+		assertEquals(0, ((Number) out[0]).intValue());
+		assertEquals("foo", (String) out[1]);
+		assertEquals(Number.class, f2.getOutputTypeFor(0));
+		assertEquals(String.class, f2.getOutputTypeFor(1));
+		f2.getInputTypesFor(in_types, 0);
+		assertEquals(1, in_types.size());
+		assertTrue(in_types.contains(Collection.class));
+		in_types.clear();
+		f2.getInputTypesFor(in_types, 1);
+		assertEquals(0, in_types.size());
+		in_types.clear();
+		assertEquals(Number.class, f2.getOutputTypeFor(0));
+		assertEquals(String.class, f2.getOutputTypeFor(1));
+	}
+
+	@Test
+	public void testFromArray()
+	{
+		FromArray f = new Bags.FromArray(Number.class, String.class);
+		Object[] array = new Object[]{0, "foo"};
+		assertEquals(2, f.getOutputArity());
+		Object[] out = new Object[2];
+		f.evaluate(new Object[]{array}, out);
+		assertEquals(0, ((Number) out[0]).intValue());
+		assertEquals("foo", (String) out[1]);
+		assertEquals(Number.class, f.getOutputTypeFor(0));
+		assertEquals(String.class, f.getOutputTypeFor(1));
+		Set<Class<?>> in_types = new HashSet<Class<?>>();
+		f.getInputTypesFor(in_types, 0);
+		assertEquals(1, in_types.size());
+		assertTrue(in_types.contains(array.getClass()));
+		in_types.clear();
+		f.getInputTypesFor(in_types, 1);
+		assertEquals(0, in_types.size());
+		in_types.clear();
+		assertEquals(Number.class, f.getOutputTypeFor(0));
+		assertEquals(String.class, f.getOutputTypeFor(1));
+		FromCollection f2 = f.duplicate();
+		assertEquals(2, f2.getOutputArity());
+		f2.evaluate(new Object[]{array}, out);
+		assertEquals(0, ((Number) out[0]).intValue());
+		assertEquals("foo", (String) out[1]);
+		assertEquals(Number.class, f2.getOutputTypeFor(0));
+		assertEquals(String.class, f2.getOutputTypeFor(1));
+		f2.getInputTypesFor(in_types, 0);
+		assertEquals(1, in_types.size());
+		assertTrue(in_types.contains(array.getClass()));
+		in_types.clear();
+		f2.getInputTypesFor(in_types, 1);
+		assertEquals(0, in_types.size());
+		in_types.clear();
+		assertEquals(Number.class, f2.getOutputTypeFor(0));
+		assertEquals(String.class, f2.getOutputTypeFor(1));
+	}
+
 	
 	@Test
 	public void testSize()

@@ -17,6 +17,7 @@
  */
 package ca.uqac.lif.cep.util;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -28,10 +29,7 @@ import ca.uqac.lif.cep.Connector;
 import ca.uqac.lif.cep.Processor;
 import ca.uqac.lif.cep.Pushable;
 import ca.uqac.lif.cep.SingleProcessor;
-import ca.uqac.lif.cep.functions.BinaryFunction;
-import ca.uqac.lif.cep.functions.Function;
-import ca.uqac.lif.cep.functions.InvalidArgumentException;
-import ca.uqac.lif.cep.functions.UnaryFunction;
+import ca.uqac.lif.cep.functions.*;
 import ca.uqac.lif.cep.tmf.SinkLast;
 
 /**
@@ -208,7 +206,7 @@ public class Bags
 		protected Class<?>[] m_types;
 		
 		/**
-		 * Creates a new ToList function
+		 * Creates a new ToCollection function
 		 * @param types The types of each input stream
 		 */
 		public ToCollection(Class<?> ... types)
@@ -431,4 +429,136 @@ public class Bags
 		}
 	}
 
+	/**
+	 * Converts a collection of <i>n</i> objects into a front
+	 * of <i>n</i> output events. If any, the function
+	 * preserves the ordering of the events: element <i>i</i>
+	 * corresponds to the <i>i</i>-th output stream.
+	 *
+	 * @author Quentin Betti
+	 */
+	public static class FromCollection extends Function
+	{
+		/**
+		 * An array that keeps the types of each output stream
+		 */
+		protected Class<?>[] m_types;
+
+		/**
+		 * Creates a new FromCollection function
+		 * @param types The types of each output stream
+		 */
+		public FromCollection(Class<?> ... types)
+		{
+			super();
+			m_types = types;
+		}
+
+		@Override
+		public int getInputArity()
+		{
+			return 1;
+		}
+
+		@Override
+		public int getOutputArity()
+		{
+			return m_types.length;
+		}
+
+		@Override
+		public void reset()
+		{
+			// Nothing to do
+		}
+
+		@Override
+		public void getInputTypesFor(Set<Class<?>> classes, int index) {
+			if(index == 0)
+			{
+				classes.add(Collection.class);
+			}
+		}
+
+		@Override
+		public Class<?> getOutputTypeFor(int index) {
+			return m_types[index];
+		}
+
+		@Override
+		public FromCollection duplicate() {
+			return new FromCollection(m_types);
+		}
+
+		@Override
+		public void evaluate(Object[] inputs, Object[] outputs) {
+			if(! (inputs[0] instanceof Collection))
+			{
+				throw new FunctionException("Index 0 of input front must be a collection");
+			}
+
+			Collection in = (Collection) inputs[0];
+			if(in.size() != outputs.length)
+			{
+				throw new FunctionException("Size of input collection must equal the output arity");
+			}
+
+			int i = 0;
+			for(Object o : in)
+			{
+				outputs[i] = o;
+				i++;
+			}
+		}
+	}
+
+	/**
+	 * Converts an array of <i>n</i> objects into a front
+	 * of <i>n</i> output events. In such a case, the function
+	 * preserves the ordering of the events: element <i>i</i>
+	 * corresponds to the <i>i</i>-th output stream.
+	 *
+	 * @author Quentin Betti
+	 */
+	public static class FromArray extends FromCollection
+	{
+		public FromArray(Class<?> ... types)
+		{
+			super(types);
+		}
+
+		@Override
+		public void getInputTypesFor(Set<Class<?>> classes, int index) {
+			if(index == 0)
+			{
+				classes.add((new Object[]{}).getClass());
+			}
+		}
+
+		@Override
+		public FromArray duplicate()
+		{
+			return new FromArray(m_types);
+		}
+
+		@Override
+		public void evaluate(Object[] inputs, Object[] outputs)
+		{
+			Object in = inputs[0];
+			if(!in.getClass().isArray())
+			{
+				throw new FunctionException("Index 0 of input front must be an array");
+			}
+
+			int length = Array.getLength(in);
+			if(length != outputs.length)
+			{
+				throw new FunctionException("Length of input array must equal the output arity");
+			}
+			for(int i = 0; i < length; i++)
+			{
+				outputs[i] = Array.get(in, i);
+			}
+		}
+	}
 }
